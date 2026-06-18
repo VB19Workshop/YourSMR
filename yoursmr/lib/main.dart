@@ -1,122 +1,237 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await AudioPlayer.global.setAudioContext(
+    AudioContext(
+      android: AudioContextAndroid(
+        contentType: AndroidContentType.sonification,
+        usageType: AndroidUsageType.game,
+        audioFocus: AndroidAudioFocus.none,
+      ),
+    ),
+  );
+
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SoundButton extends StatelessWidget {
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
 
-  // This widget is the root of your application.
+  const SoundButton({
+    super.key,
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 20),
+        curve: Curves.easeInOut,
+
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+
+        decoration: BoxDecoration(
+          color: active ? const Color.fromARGB(0, 0, 150, 135) : const Color.fromARGB(0, 96, 125, 139),
+          borderRadius: BorderRadius.circular(10),
+        ),
+
+        child: AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeInOut,
+
+          style: TextStyle(
+            color: active ? const Color.fromARGB(255, 252, 247, 179) : Colors.white70,
+            fontSize: 16,
+          ),
+
+          child: Text(label),
+        ),
+      ),
+    );
+  }
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final player_1 = AudioPlayer();
+  final player_2 = AudioPlayer();
+  final player_3 = AudioPlayer();
+  final player_4 = AudioPlayer();
+  final player_5 = AudioPlayer();
+  final player_6 = AudioPlayer();  
+
+  List<bool> buttonToggles = [false, false, false, false, false, false];
+
+  bool button_1_toggled = false;
+  bool button_2_toggled = false;
+  bool button_3_toggled = false;
+  bool button_4_toggled = false;
+  bool button_5_toggled = false;
+  bool button_6_toggled = false;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
+      title: 'YourSMR',
+      home: Scaffold(
+        backgroundColor: Color(0xFF99bd99),
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+        appBar: AppBar(
+          backgroundColor: Color(0xFF99bd99),
+          /*title: Row(
+            children: [
+              IconButton(icon: Icon(Icons.menu),
+              iconSize: 25.0,
+              onPressed: () {
+              }
+            )
           ],
+        ), */
+      ),
+        
+        body: Center(
+          child: Text('Find your vibe',
+          style: TextStyle(fontSize: 20, 
+          fontFamily: 'Arial'), 
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+        
+        bottomNavigationBar: Container(
+          margin: const EdgeInsets.all(12),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: Color(0xFF6b605a),
+            borderRadius: BorderRadius.circular(16),
+          ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SoundButton(
+                    label: "River",
+                    active: button_1_toggled,
+                    onTap: () async {
+                      if (!button_1_toggled) {
+                        setState(() => button_1_toggled = true);
+                        await player_1.setReleaseMode(ReleaseMode.loop);
+                        await fadeIn(player_1, AssetSource("river_base.mp3"));
+                      } else {
+                        await fadeOut(player_1);
+                        setState(() => button_1_toggled = false);
+                      }
+                    },
+                  ),
+
+                  SoundButton(
+                    label: "Rain",
+                    active: button_2_toggled,
+                    onTap: () async {
+                      if (!button_2_toggled) {
+                        button_2_toggled = true;
+                        await player_2.setReleaseMode(ReleaseMode.loop);
+                        await fadeIn(player_2, AssetSource("rain.wav"));
+                      } else {
+                        await fadeOut(player_2);
+                        button_2_toggled = false;
+                      }
+                      setState(() {});
+                    },
+                  ),
+
+                  SoundButton(
+                    label: "Wind",
+                    active: button_3_toggled,
+                    onTap: () async {
+                      if (!button_3_toggled) {
+                        button_3_toggled = true;
+                        await player_3.setReleaseMode(ReleaseMode.loop);
+                        await fadeIn(player_3, AssetSource("wind.wav"));
+                      } else {
+                        await fadeOut(player_3);
+                        button_3_toggled = false;
+                      }
+                      setState(() {});
+                    },
+                  ),
+
+                  SoundButton(
+                    label: "Campfire",
+                    active: button_4_toggled,
+                    onTap: () async {
+                      if (!button_4_toggled) {
+                        button_4_toggled = true;
+                        await player_4.setReleaseMode(ReleaseMode.loop);
+                        await fadeIn(player_4, AssetSource("campfire.wav"));
+                      } else {
+                        await fadeOut(player_4);
+                        button_4_toggled = false;
+                      }
+                      setState(() {});
+                    },
+                  ),
+
+                  SoundButton(
+                    label: "Book",
+                    active: button_5_toggled,
+                    onTap: () async {
+                      if (!button_5_toggled) {
+                        button_5_toggled = true;
+                        await player_5.setReleaseMode(ReleaseMode.loop);
+                        await fadeIn(player_5, AssetSource("book.wav"));
+                      } else {
+                        await fadeOut(player_5);
+                        button_5_toggled = false;
+                      }
+                      setState(() {});
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
     );
   }
+
+Future<void> fadeIn(AudioPlayer player, AssetSource source,
+    {Duration duration = const Duration(milliseconds: 800)}) async {
+  await player.setVolume(0.0);
+  await player.play(source);
+
+  const steps = 20;
+  final stepDuration = duration ~/ steps;
+
+  for (int i = 1; i <= steps; i++) {
+    await Future.delayed(stepDuration);
+    player.setVolume(i / steps);
+  }
+}
+
+Future<void> fadeOut(AudioPlayer player,
+    {Duration duration = const Duration(milliseconds: 800)}) async {
+  const steps = 20;
+  final stepDuration = duration ~/ steps;
+
+  for (int i = steps; i >= 0; i--) {
+    await Future.delayed(stepDuration);
+    player.setVolume(i / steps);
+  }
+
+  await player.stop();
+}
+
 }
