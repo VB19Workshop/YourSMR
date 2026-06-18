@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.VB19.yoursmr"
+    namespace = "com.VB19.Yoursmr"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
